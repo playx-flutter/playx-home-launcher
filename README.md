@@ -68,6 +68,6 @@ Playx Home Launcher is exclusively designed for Android applications developed w
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/playx-flutter/playx-home-launcher/blob/main/LICENSE) file for details.
 
 For more details and examples, refer to the documentation.
