@@ -84,6 +84,21 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+
+  // Check if youtube app is launcher
+  Future<void> checkIfYoutubeIsLauncher() async {
+    try{
+      final isLauncher = await PlayxHomeLauncher.isLauncherApp(packageName: 'com.google.android.youtube');
+      setState(() {
+        _isLauncher = '(Youtube) : ${(isLauncher ? ' yes' : 'no')}';
+      });
+    }catch(e){
+      setState(() {
+        _isLauncher = 'Error : ${e.toString()}';
+      });
+    }
+  }
+
   Future<void> getCurrentPackageName() async {
     try{
      final name= await  PlayxHomeLauncher.getCurrentPackageName();
@@ -119,7 +134,13 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   checkIfAppIsLauncher();
                 },
-                child: const Text('Check if App is Launcher'),
+                child: const Text('Check if this App is Launcher'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  checkIfYoutubeIsLauncher();
+                },
+                child: const Text('Check if Youtube is Launcher'),
               ),
               ElevatedButton(
                 onPressed: () {
