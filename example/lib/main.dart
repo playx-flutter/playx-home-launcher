@@ -18,12 +18,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _defaultLauncher = 'Unknown';
   bool _isDefault = false;
+  String _isLauncher = 'no';
+
 
   @override
   void initState() {
     super.initState();
     getDefaultPackageName();
     checkIfLauncherIsDefault();
+    checkIfAppIsLauncher();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -34,8 +37,8 @@ class _MyAppState extends State<MyApp> {
     try {
       name =
           await PlayxHomeLauncher.getDefaultLauncherPackageName() ?? 'Unknown package';
-    } on PlatformException {
-      name = 'Failed to get package name.';
+    } catch(e) {
+      name = 'Failed to get package name.\n $e';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -66,6 +69,20 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
+  Future<void> checkIfAppIsLauncher() async {
+    try{
+      final isLauncher = await PlayxHomeLauncher.checkIfAppIsLauncher() ??false;
+      setState(() {
+        _isLauncher = isLauncher ? 'yes' : 'no';
+      });
+    }catch(e){
+      setState(() {
+        _isLauncher = 'Error : ${e.toString()}';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -77,18 +94,41 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Default is : $_defaultLauncher\n'),
+              Text('Is Launcher : $_isLauncher\n'),
               Text('Is Default : $_isDefault\n'),
+              Text('Default is : $_defaultLauncher\n'),
+
+              ElevatedButton(
+                onPressed: () async {
+                  checkIfAppIsLauncher();
+                },
+                child: const Text('Check if App is Launcher'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  checkIfLauncherIsDefault();
+                },
+                child: const Text('Is the app the Default Launcher'),
+              ),
+              // default
+              ElevatedButton(
+                onPressed: () {
+                  getDefaultPackageName();
+                },
+                child: const Text('Get Default Launcher Name'),
+              ),
+
               ElevatedButton(
                 onPressed: (){
-                  try {
-                    PlayxHomeLauncher.showLauncherSelectionDialog();
-                  }catch(e){
-                    print(e);
-                    PlayxHomeLauncher.openLauncherSettings();
-                  }
+                  PlayxHomeLauncher.showLauncherSelectionDialog();
                 },
                 child: const Text('Show Launcher Selection'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  PlayxHomeLauncher.openLauncherSettings();
+                },
+                child: const Text('Open Launcher Settings'),
               ),
             ],
           ),
@@ -97,4 +137,5 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
 }
