@@ -11,7 +11,6 @@ dependencies:
 
   playx_home_launcher:
     path: ../
-  cupertino_icons: ^1.0.6
 
 dev_dependencies:
   integration_test:
@@ -19,7 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.1
+  flutter_lints: ^5.0.0
 
 flutter:
 

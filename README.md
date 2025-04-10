@@ -1,73 +1,150 @@
 # Playx Home Launcher
 
-**Flutter Plugin for Android**
+**A Flutter Plugin for Android**
 
-Playx Home Launcher simplifies launcher management in Flutter applications. It provides essential utilities to check the current default launcher and integrate a selection dialog for users to choose their preferred home launcher.
+`Playx Home Launcher` provides seamless access to Android's launcher-related APIs. Whether you're building a custom launcher or want to let users manage their launcher preferences, this plugin equips you with powerful tools to interact with the default launcher, check app capabilities, and access system launcher settings.
 
-## Features
-- Obtain the package name of the current default launcher on the user's device.
--   Seamlessly integrate a selection dialog for users to choose their desired home launcher.
--  Open the launcher settings on the device.
-- Check if an app is the default launcher.
-- Check if an app is alauncher.
+---
 
-## Getting Started
+## ✨ Features
 
-1.  **Installation:**
+- 🔍 Get the **current default launcher** package name.
+- ✅ Check if **your app or any other app** is a launcher or the default launcher.
+- ⚙️ Open the system **launcher settings**.
+- 📤 Show the **launcher selection dialog** to help users choose their preferred home screen app.
+- 📦 Get the **package name** of the current app.
 
-    Add the Playx Home Launcher package to your `pubspec.yaml` file:
+---
+
+## 🛠 Getting Started
+
+### 1. Installation
+
+Add the package to your `pubspec.yaml`:
 
 ```yaml
-    dependencies:
-      playx_home_launcher: ^version_number
+dependencies:
+  playx_home_launcher: ^<latest_version>
 ```
 
-Run:
+Then run:
 
 ```bash
-    flutter pub get` 
-```    
-2.  **Import:**
+flutter pub get
+```
 
-    Import the package in your Dart code:
+---
+
+### 2. Android Setup
+
+To use `getDefaultLauncherPackageName` on Android 11 and above, add this to your `AndroidManifest.xml`:
+
+```xml
+<queries>
+  <intent>
+    <action android:name="android.intent.action.MAIN" />
+    <category android:name="android.intent.category.HOME" />
+  </intent>
+</queries>
+```
+
+Without this, Android may return fallback home apps like `com.android.settings.FallbackHome`.
+
+---
+
+### 3. Import the Package
 
 ```dart
-    import 'package:playx_home_launcher/playx_home_launcher.dart';` 
+import 'package:playx_home_launcher/playx_home_launcher.dart';
 ```
 
-3.  **Usage:**
+---
 
-    Utilize the provided functions to manage launcher-related tasks in your app.
- ```dart   
-// Returns current launcher package name
-String currentLauncher = await PlayxHomeLauncher.getCurrentLauncher();
+### 4. Usage Examples
 
-// Check if the launcher is the default
-// packageName variable is optional as if not provided it will use the app package name.
-bool? isLauncherDefault = await PlayxHomeLauncher.checkIfLauncherIsDefault(packageName: 'com.example.myapp');
+#### 🔍 Get Default Launcher
 
-// Show launcher selection dialog if avialble or Open launcher settings
-PlayxHomeLauncher.showLauncherSelectionDialog(context);
+```dart
+final String? defaultLauncher = await PlayxHomeLauncher.getDefaultLauncherPackageName();
+```
 
-// Check if the app is a launcher
-bool? isAppLauncher = await PlayxHomeLauncher.checkIfAppIsLauncher(packageName: 'com.example.myapp');
+#### ✅ Check If Current App Is a Launcher
 
-// Open launcher settings
+```dart
+final bool isLauncher = await PlayxHomeLauncher.isThisAppALauncher();
+```
+
+#### ✅ Check If Current App Is the Default Launcher
+
+```dart
+final bool isDefault = await PlayxHomeLauncher.isThisAppTheDefaultLauncher();
+```
+
+#### 📦 Check If *Any App* Is a Launcher
+
+```dart
+final bool isLauncher = await PlayxHomeLauncher.isLauncherApp(packageName: 'com.example.otherapp');
+```
+
+#### 📦 Check If *Any App* Is the Default Launcher
+
+```dart
+final bool isDefault = await PlayxHomeLauncher.isDefaultLauncher(packageName: 'com.example.otherapp');
+```
+
+#### ⚙️ Open Launcher Settings
+
+```dart
 await PlayxHomeLauncher.openLauncherSettings();
-
 ```
 
-4.  **Enjoy:**
+#### 🔄 Show Launcher Selection Dialog
 
-    Enhance your Flutter app with streamlined launcher management using Playx Home Launcher!
+```dart
+await PlayxHomeLauncher.showLauncherSelectionDialog(
+  openSettingsOnError: true, // Fallback to settings if dialog fails
+);
+```
 
+#### 📦 Get This App’s Package Name
 
-## Note
+```dart
+final String packageName = await PlayxHomeLauncher.getCurrentPackageName();
+```
 
-Playx Home Launcher is exclusively designed for Android applications developed with Flutter.
+---
 
-## License
+## 📱 Making Your App a Launcher
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/playx-flutter/playx-home-launcher/blob/main/LICENSE) file for details.
+To make your Flutter app act as a launcher (i.e., appear in the launcher selection dialog), you need to declare a launcher intent filter in your Android `AndroidManifest.xml` under the `<activity>` tag:
 
-For more details and examples, refer to the documentation.
+```xml
+<intent-filter>
+  <action android:name="android.intent.action.MAIN" />
+  <category android:name="android.intent.category.HOME" />
+  <category android:name="android.intent.category.DEFAULT" />
+</intent-filter>
+```
+
+> ⚠️ Your app must be built to handle launcher responsibilities like displaying home screen UI, managing widgets, etc.
+
+---
+
+## 📌 Notes
+
+- 📱 This plugin is **Android-only**. It will not function on iOS or other platforms.
+- 🛡️ Make sure to test on physical devices, as launcher behavior might differ in emulators or certain OEM environments.
+
+---
+
+## 📄 License
+
+Licensed under the MIT License.  
+See the [LICENSE](https://github.com/playx-flutter/playx-home-launcher/blob/main/LICENSE) file for more details.
+
+---
+
+## 📚 Example
+
+Check out the [example directory](example/) in the repository for a working sample app using all the available methods.
+

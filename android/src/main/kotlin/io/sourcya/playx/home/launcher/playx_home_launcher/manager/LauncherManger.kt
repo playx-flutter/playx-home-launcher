@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 
 
 class LauncherManger constructor(
@@ -79,7 +80,7 @@ class LauncherManger constructor(
 
     // Check if your app is the default launcher.
     fun isMyLauncherDefault(packageName: String?): Boolean {
-        return if (roleManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isRoleAvailable()) {
             roleManager!!.isRoleHeld(RoleManager.ROLE_HOME)
         } else {
             val currentDefaultPackage = getCurrentDefaultLauncherPackageName();
@@ -89,18 +90,33 @@ class LauncherManger constructor(
 
 
     // Get the intent to launch the launcher selection screen.
-    fun getLauncherSelectionIntent(packageName: String?): Intent {
-        val settingsIntent = Intent(Settings.ACTION_HOME_SETTINGS)
-        if (!isLauncherApp(packageName)) {
-            return settingsIntent
-        }
+    fun getLauncherSelectionIntent(packageName: String?, openSettingsOnError: Boolean): Intent? {
 
-        if (roleManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-            && roleManager!!.isRoleAvailable(RoleManager.ROLE_HOME)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isRoleAvailable()
         ) {
             return roleManager!!.createRequestRoleIntent(RoleManager.ROLE_HOME)
         }
-        return settingsIntent
+        if (openSettingsOnError) {
+            val settingsIntent = Intent(Settings.ACTION_HOME_SETTINGS)
+            return settingsIntent
+
+        }
+        return null;
+
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun isRoleAvailable(): Boolean {
+        return if (roleManager != null) {
+            roleManager!!.isRoleAvailable(RoleManager.ROLE_HOME)
+        } else {
+            false
+        }
+    }
+
+    fun getCurrentPackageName(): String {
+        return context.packageName
     }
 
 
