@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 
 
 class LauncherManger constructor(
@@ -79,7 +80,7 @@ class LauncherManger constructor(
 
     // Check if your app is the default launcher.
     fun isMyLauncherDefault(packageName: String?): Boolean {
-        return if (roleManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isRoleAvailable()) {
             roleManager!!.isRoleHeld(RoleManager.ROLE_HOME)
         } else {
             val currentDefaultPackage = getCurrentDefaultLauncherPackageName();
@@ -95,12 +96,21 @@ class LauncherManger constructor(
             return settingsIntent
         }
 
-        if (roleManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-            && roleManager!!.isRoleAvailable(RoleManager.ROLE_HOME)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isRoleAvailable()
         ) {
             return roleManager!!.createRequestRoleIntent(RoleManager.ROLE_HOME)
         }
         return settingsIntent
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun isRoleAvailable(): Boolean {
+        return if (roleManager != null) {
+            roleManager!!.isRoleAvailable(RoleManager.ROLE_HOME)
+        } else {
+            false
+        }
     }
 
 
