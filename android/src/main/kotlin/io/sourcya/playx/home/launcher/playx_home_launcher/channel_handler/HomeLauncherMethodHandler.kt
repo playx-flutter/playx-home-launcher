@@ -17,12 +17,13 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
     private var activity: Activity? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        when(call.method){
+        when (call.method) {
             GET_DEFAULT_LAUNCHER_PACKAGE_NAME_METHOD -> getDefaultLauncherPackageName(call, result)
             CHECK_IF_LAUNCHER_IS_DEFAULT_METHOD -> checkIfLauncherIsDefault(call, result)
             CHECK_IF_APP_IS_LAUNCHER_METHOD -> checkIfAppIsLauncher(call, result)
             SHOW_LAUNCHER_SELECTION_DIALOG_METHOD -> showLauncherSelectionDialog(call, result)
             OPEN_LAUNCHER_SETTINGS_METHOD -> openLauncherSettings(result)
+            GET_CURRENT_PACKAGE_NAME_METHOD -> getCurrentPackageName(call, result)
             else -> result.notImplemented()
         }
     }
@@ -86,9 +87,16 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
             result.error("launcher_not_initialized", "Launcher manger is Not initialized", null)
             return;
         }
-        val packageName: String? = call.arguments as String?
+        val args = call.arguments as Map<*, *>
+        val packageName: String? = args["packageName"] as String?
+        val openSettingsOnError: Boolean = args["openSettingsOnError"] as Boolean
 
-        val intent = launcherManger!!.getLauncherSelectionIntent(packageName);
+
+        val intent = launcherManger!!.getLauncherSelectionIntent(packageName, openSettingsOnError);
+        if (intent == null) {
+            result.success(false);
+            return;
+        }
         Log.d("TAG", "showLauncherSelectionDialog: $intent")
         if (activity == null) {
             result.error("activity_not_initialized", "Activity is Not initialized", null)
@@ -98,7 +106,6 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
         activity!!.startActivityForResult(intent, 0)
         result.success(true)
     }
-
 
 
     // Open launcher settings.
@@ -111,6 +118,16 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
 
         activity!!.startActivityForResult(intent, 1)
         result.success(true)
+    }
+
+    // Get current package name.
+    private fun getCurrentPackageName(call: MethodCall, result: MethodChannel.Result) {
+        if (launcherManger == null) {
+            result.error("launcher_not_initialized", "Launcher manger is Not initialized", null)
+            return;
+        }
+        val packageName = launcherManger!!.getCurrentPackageName()
+        result.success(packageName)
     }
 
 
@@ -161,8 +178,7 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
         const val CHECK_IF_APP_IS_LAUNCHER_METHOD = "checkIfAppIsLauncher"
         const val SHOW_LAUNCHER_SELECTION_DIALOG_METHOD = "showLauncherSelectionDialog"
         const val OPEN_LAUNCHER_SETTINGS_METHOD = "openLauncherSettings"
-
-
+        const val GET_CURRENT_PACKAGE_NAME_METHOD = "getCurrentPackageName"
 
     }
 

@@ -35,12 +35,17 @@ abstract class PlayxHomeLauncherPlatform extends PlatformInterface {
     throw UnimplementedError('checkIfAppIsLauncher() has not been implemented.');
   }
 
-  Future<void> showLauncherSelectionDialog({String? packageName}){
+  Future<bool> showLauncherSelectionDialog({String? packageName, bool openSettingsOnError = true}){
     throw UnimplementedError('showLauncherSelectionDialog() has not been implemented.');
   }
+
 
   Future<void> openLauncherSettings(){
     throw UnimplementedError('openLauncherSettings() has not been implemented.');
   }
 
-}
+   Future<String> getCurrentPackageName() {
+    throw UnimplementedError('getCurrentPackageName() has not been implemented.');
+  }
+
+  }
