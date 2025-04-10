@@ -1,9 +1,9 @@
 name: playx_home_launcher
 description: "Playx Home Launcher: Streamline launcher management in your Flutter app. Quickly check the current default launcher and enhance user experience with an integrated selection dialog."
-version: 0.0.1
+version: 0.1.0
 homepage: https://sourcya.com/
-repository: https://github.com/playx-flutter/playx-home-launcher
-issue_tracker: https://github.com/playx-flutter/playx-home-launcher/issues
+repository: https://github.com/playx-flutter/playx_version_update
+issue_tracker: https://github.com/playx-flutter/playx_version_update/issues
 
 topics:
   - playx
@@ -17,12 +17,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.1.7
+  plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^5.0.0
 
 flutter:
   plugin:
