@@ -25,7 +25,7 @@ apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
 android {
-    namespace = "com.example.untitled"
+    namespace = "io.sourcya.playx.home.launcher.playx_home_launcher"
 
     compileSdk = 35
 

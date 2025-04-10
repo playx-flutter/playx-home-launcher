@@ -90,17 +90,19 @@ class LauncherManger constructor(
 
 
     // Get the intent to launch the launcher selection screen.
-    fun getLauncherSelectionIntent(packageName: String?): Intent {
-        val settingsIntent = Intent(Settings.ACTION_HOME_SETTINGS)
-        if (!isLauncherApp(packageName)) {
-            return settingsIntent
-        }
+    fun getLauncherSelectionIntent(packageName: String?, openSettingsOnError: Boolean): Intent? {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isRoleAvailable()
         ) {
             return roleManager!!.createRequestRoleIntent(RoleManager.ROLE_HOME)
         }
-        return settingsIntent
+        if (openSettingsOnError) {
+            val settingsIntent = Intent(Settings.ACTION_HOME_SETTINGS)
+            return settingsIntent
+
+        }
+        return null;
+
     }
 
 
@@ -111,6 +113,10 @@ class LauncherManger constructor(
         } else {
             false
         }
+    }
+
+    fun getCurrentPackageName(): String {
+        return context.packageName
     }
 
 

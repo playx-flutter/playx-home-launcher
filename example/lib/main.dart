@@ -19,6 +19,7 @@ class _MyAppState extends State<MyApp> {
   String _defaultLauncher = 'Unknown';
   bool _isDefault = false;
   String _isLauncher = 'no';
+  String _packageName = 'Unknown';
 
 
   @override
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
     getDefaultPackageName();
     checkIfLauncherIsDefault();
     checkIfAppIsLauncher();
+    getCurrentPackageName();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -57,12 +59,11 @@ class _MyAppState extends State<MyApp> {
     // We also handle the message potentially returning null.
     try {
       isDefault =
-          await PlayxHomeLauncher.checkIfLauncherIsDefault() ?? false;
-    } on PlatformException {
+          await PlayxHomeLauncher.isThisAppTheDefaultLauncher();
+    } catch (e) {
       isDefault = false;
+      debugPrint('Failed to check if launcher is default.\n $e');
     }
-
-    if (!mounted) return;
 
     setState(() {
       _isDefault = isDefault;
@@ -72,7 +73,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> checkIfAppIsLauncher() async {
     try{
-      final isLauncher = await PlayxHomeLauncher.checkIfAppIsLauncher() ??false;
+      final isLauncher = await PlayxHomeLauncher.isThisAppALauncher();
       setState(() {
         _isLauncher = isLauncher ? 'yes' : 'no';
       });
@@ -82,6 +83,21 @@ class _MyAppState extends State<MyApp> {
       });
     }
   }
+
+  Future<void> getCurrentPackageName() async {
+    try{
+     final name= await  PlayxHomeLauncher.getCurrentPackageName();
+      setState(() {
+        _packageName = name;
+      });
+    }catch(e){
+      setState(() {
+        _packageName = 'Error : ${e.toString()}';
+      });
+    }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +113,7 @@ class _MyAppState extends State<MyApp> {
               Text('Is Launcher : $_isLauncher\n'),
               Text('Is Default : $_isDefault\n'),
               Text('Default is : $_defaultLauncher\n'),
+              Text('This app Package Name : $_packageName\n'),
 
               ElevatedButton(
                 onPressed: () async {
@@ -119,8 +136,9 @@ class _MyAppState extends State<MyApp> {
               ),
 
               ElevatedButton(
-                onPressed: (){
-                  PlayxHomeLauncher.showLauncherSelectionDialog();
+                onPressed: () async {
+                final res = await   PlayxHomeLauncher.showLauncherSelectionDialog(openSettingsOnError: true);
+                debugPrint('Launcher Selection Dialog Result: $res');
                 },
                 child: const Text('Show Launcher Selection'),
               ),
@@ -129,6 +147,12 @@ class _MyAppState extends State<MyApp> {
                   PlayxHomeLauncher.openLauncherSettings();
                 },
                 child: const Text('Open Launcher Settings'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  getCurrentPackageName();
+                },
+                child: const Text('Get app Package Name'),
               ),
             ],
           ),
