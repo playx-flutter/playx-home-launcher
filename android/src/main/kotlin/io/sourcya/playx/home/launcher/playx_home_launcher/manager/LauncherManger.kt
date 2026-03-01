@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
+import android.app.UiModeManager
+import android.content.res.Configuration
 
 
 class LauncherManger constructor(
@@ -38,8 +40,14 @@ class LauncherManger constructor(
     // If this queries element is omitted from your application's manifest, then the device will report the com.android.settings.FallbackHome
     // activity as the one and only home activity installed on the device.
     fun getCurrentDefaultLauncherPackageName(): String? {
+        val isTv = isTv()
+
         val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
+        if (isTv) {
+            intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+        } else {
+            intent.addCategory(Intent.CATEGORY_HOME)
+        }
 
         val resolveInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             context.packageManager.resolveActivity(
@@ -49,17 +57,37 @@ class LauncherManger constructor(
             )
         else
             context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return resolveInfo?.activityInfo?.packageName;
 
+        // Fallback to CATEGORY_HOME if LEANBACK_LAUNCHER didn't return a default
+        if (isTv && resolveInfo == null) {
+            val fallbackIntent = Intent(Intent.ACTION_MAIN)
+            fallbackIntent.addCategory(Intent.CATEGORY_HOME)
+            val fallbackResolveInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                context.packageManager.resolveActivity(
+                    fallbackIntent, PackageManager.ResolveInfoFlags.of(
+                        PackageManager.MATCH_DEFAULT_ONLY.toLong()
+                    )
+                )
+            else
+                context.packageManager.resolveActivity(fallbackIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            return fallbackResolveInfo?.activityInfo?.packageName
+        }
+
+        return resolveInfo?.activityInfo?.packageName
     }
 
     // Check if an app is a launcher app or not.
     fun isLauncherApp(packageName: String?): Boolean {
         val myPackageName = packageName ?: context.packageName
         val pm = context.packageManager
+        val isTv = isTv()
 
         val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
+        if (isTv) {
+            intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+        } else {
+            intent.addCategory(Intent.CATEGORY_HOME)
+        }
 
         val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             pm.queryIntentActivities(
@@ -74,6 +102,26 @@ class LauncherManger constructor(
                 return true
             }
         }
+
+        // Also check CATEGORY_HOME if it's TV, as some TV launchers might only declare HOME
+        if (isTv) {
+            val fallbackIntent = Intent(Intent.ACTION_MAIN)
+            fallbackIntent.addCategory(Intent.CATEGORY_HOME)
+            val fallbackResolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                pm.queryIntentActivities(
+                    fallbackIntent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+                )
+            else
+                pm.queryIntentActivities(fallbackIntent, PackageManager.MATCH_ALL)
+
+            for (resolveInfo in fallbackResolveInfoList) {
+                if (resolveInfo.activityInfo.packageName == myPackageName) {
+                    return true
+                }
+            }
+        }
+
         return false
     }
 
@@ -97,7 +145,16 @@ class LauncherManger constructor(
             return roleManager!!.createRequestRoleIntent(RoleManager.ROLE_HOME)
         }
         if (openSettingsOnError) {
+            val isTv = isTv()
+
             val settingsIntent = Intent(Settings.ACTION_HOME_SETTINGS)
+
+            // For Android TV, ACTION_HOME_SETTINGS might not exist or be hidden by OEMs.
+            // As a fallback, we can point them to the general device or app settings
+            // if the ACTION_HOME_SETTINGS intent cannot be resolved.
+            if (isTv && settingsIntent.resolveActivity(context.packageManager) == null) {
+                return Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+            }
             return settingsIntent
 
         }
@@ -118,6 +175,9 @@ class LauncherManger constructor(
     fun getCurrentPackageName(): String {
         return context.packageName
     }
-
+    fun isTv(): Boolean {
+        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    }
 
 }
