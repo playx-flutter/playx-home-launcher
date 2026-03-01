@@ -24,6 +24,7 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
             SHOW_LAUNCHER_SELECTION_DIALOG_METHOD -> showLauncherSelectionDialog(call, result)
             OPEN_LAUNCHER_SETTINGS_METHOD -> openLauncherSettings(result)
             GET_CURRENT_PACKAGE_NAME_METHOD -> getCurrentPackageName(call, result)
+            IS_TV_METHOD -> isTv(call, result)
             else -> result.notImplemented()
         }
     }
@@ -131,6 +132,16 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
     }
 
 
+    // Check if the device is a TV.
+    private fun isTv(call: MethodCall, result: MethodChannel.Result) {
+        if (launcherManger == null) {
+            result.error("launcher_not_initialized", "Launcher manger is Not initialized", null)
+            return;
+        }
+        val isTv = launcherManger!!.isTv()
+        result.success(isTv)
+    }
+
     /**
      * Registers this instance as a method call handler on the given `messenger`.
      * Stops any previously started and unstopped calls.
@@ -179,6 +190,7 @@ class HomeLauncherMethodHandler : MethodChannel.MethodCallHandler {
         const val SHOW_LAUNCHER_SELECTION_DIALOG_METHOD = "showLauncherSelectionDialog"
         const val OPEN_LAUNCHER_SETTINGS_METHOD = "openLauncherSettings"
         const val GET_CURRENT_PACKAGE_NAME_METHOD = "getCurrentPackageName"
+        const val IS_TV_METHOD = "isTv"
 
     }
 

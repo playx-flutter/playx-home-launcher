@@ -23,29 +23,39 @@ abstract class PlayxHomeLauncherPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getDefaultLauncherPackageName(){
-    throw UnimplementedError('getDefaultLauncherPackageName() has not been implemented.');
+  Future<String?> getDefaultLauncherPackageName() {
+    throw UnimplementedError(
+        'getDefaultLauncherPackageName() has not been implemented.');
   }
 
-  Future<bool> checkIfLauncherIsDefault({String? packageName}){
-    throw UnimplementedError('checkIfLauncherIsDefault() has not been implemented.');
+  Future<bool> checkIfLauncherIsDefault({String? packageName}) {
+    throw UnimplementedError(
+        'checkIfLauncherIsDefault() has not been implemented.');
   }
 
-  Future<bool> checkIfAppIsLauncher({String? packageName}){
-    throw UnimplementedError('checkIfAppIsLauncher() has not been implemented.');
+  Future<bool> checkIfAppIsLauncher({String? packageName}) {
+    throw UnimplementedError(
+        'checkIfAppIsLauncher() has not been implemented.');
   }
 
-  Future<bool> showLauncherSelectionDialog({String? packageName, bool openSettingsOnError = true}){
-    throw UnimplementedError('showLauncherSelectionDialog() has not been implemented.');
+  Future<bool> showLauncherSelectionDialog(
+      {String? packageName, bool openSettingsOnError = true}) {
+    throw UnimplementedError(
+        'showLauncherSelectionDialog() has not been implemented.');
   }
 
-
-  Future<void> openLauncherSettings(){
-    throw UnimplementedError('openLauncherSettings() has not been implemented.');
+  Future<void> openLauncherSettings() {
+    throw UnimplementedError(
+        'openLauncherSettings() has not been implemented.');
   }
 
-   Future<String> getCurrentPackageName() {
-    throw UnimplementedError('getCurrentPackageName() has not been implemented.');
+  Future<String> getCurrentPackageName() {
+    throw UnimplementedError(
+        'getCurrentPackageName() has not been implemented.');
   }
 
+  Future<bool> isRunningOnAndroidTv() {
+    throw UnimplementedError(
+        'isRunningOnAndroidTv() has not been implemented.');
   }
+}

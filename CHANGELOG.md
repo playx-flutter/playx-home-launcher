@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+###  **New Features**
+- **Android TV Support**: The plugin now fully supports Android TV.
+    - Added `isRunningOnAndroidTv()` to check if the app is running on Android TV.
+    - Updated internal launcher queries to check for `CATEGORY_LEANBACK_LAUNCHER` on Android TV devices.
+    - Updated documentation with instructions for setting up an Android TV launcher.
+
 ## 0.1.0
 > Note: This release includes breaking changes.
 

@@ -45,6 +45,11 @@ To use `getDefaultLauncherPackageName` on Android 11 and above, add this to your
     <action android:name="android.intent.action.MAIN" />
     <category android:name="android.intent.category.HOME" />
   </intent>
+  <!-- Add this if supporting Android TV -->
+  <intent>
+    <action android:name="android.intent.action.MAIN" />
+    <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+  </intent>
 </queries>
 ```
 
@@ -112,6 +117,12 @@ await PlayxHomeLauncher.showLauncherSelectionDialog(
 final String packageName = await PlayxHomeLauncher.getCurrentPackageName();
 ```
 
+#### 📺 Check If Running On Android TV
+
+```dart
+final bool isTv = await PlayxHomeLauncher.isRunningOnAndroidTv();
+```
+
 ---
 
 ## 📱 Making Your App a Launcher
@@ -123,6 +134,8 @@ To make your Flutter app act as a launcher (i.e., appear in the launcher selecti
   <action android:name="android.intent.action.MAIN" />
   <category android:name="android.intent.category.HOME" />
   <category android:name="android.intent.category.DEFAULT" />
+  <!-- Add this if supporting Android TV -->
+  <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
 </intent-filter>
 ```
 

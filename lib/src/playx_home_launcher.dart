@@ -4,7 +4,8 @@ import 'package:playx_home_launcher/src/playx_home_launcher_platform_interface.d
 /// Provides utilities to check launcher status, get launcher info,
 /// and open launcher settings or prompt selection.
 abstract class PlayxHomeLauncher {
-  static PlayxHomeLauncherPlatform get _platform => PlayxHomeLauncherPlatform.instance;
+  static PlayxHomeLauncherPlatform get _platform =>
+      PlayxHomeLauncherPlatform.instance;
 
   /// Returns the default launcher package name.
   ///
@@ -73,6 +74,8 @@ abstract class PlayxHomeLauncher {
     return _platform.getCurrentPackageName();
   }
 
-
+  /// Returns `true` if the device is an Android TV.
+  static Future<bool> isRunningOnAndroidTv() {
+    return _platform.isRunningOnAndroidTv();
+  }
 }
-
